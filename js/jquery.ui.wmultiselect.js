@@ -1,6 +1,7 @@
 /***
  * Multiselect
  * created by miniwork.eu
+ * version: 0.2b
  ***/
 
 (function(jQuery) {
@@ -9,7 +10,8 @@
                         selected:  new Array(),  //list of keys
                         items: new Array(), //array where [ { 'v': val, 'l': lab } ...
                         maxselected: 0, //maximum of selected vals                        
-                        minchars: 2     //at least 2 chars to show autocomplete
+                        minchars: 2,    //at least 2 chars to show autocomplete
+                        tags: false
 		},
                 _uq : function()
                 {
@@ -81,7 +83,15 @@
                                     return;
                                  }
                                  if(e.which == 13) {
-                                     jQuery('.focused', this.e_popup).click();                               
+                                     var it =jQuery('.focused', this.e_popup);
+                                     if(it != null && it.length > 0){
+                                         it.click();
+                                     }
+                                     else if (o.tags  && self.e_textbox.val().trim().length > 0){
+                                         var v = self.e_textbox.val();
+                                         self._appendItem(v,v);
+                                         self.e_textbox.val('');
+                                     }
                                  }
                                  else if(e.which == 8 && self.e_textbox.val().length == 0){
                                      if(jQuery('.item:last', el).hasClass('drop')){
@@ -177,7 +187,6 @@
                     }
                 },                
                 _hidepopup: function(){
-                    console.log('hide()');
                     var d = this.e_popup;
                     jQuery(d).hide();
                     jQuery('.opt', d).unbind('click');
@@ -308,7 +317,6 @@
                     d.css({left: pos.left, top: pos.top + jQuery(e).height() + jQuery(e).css('margin-top') + jQuery(e).css('margin-bottom'), width: w});
                     
                     d.show(150, function(){   
-                        console.log('show()');
                         jQuery(window).unbind('click.' + self._uq());
                         jQuery(window).on('click.'+self._uq(),function(e) {                               
                            if(d.is(':visible') && 

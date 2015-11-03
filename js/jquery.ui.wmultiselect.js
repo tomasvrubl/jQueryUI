@@ -9,6 +9,7 @@
                         selected:  new Array(),  //list of keys
                         items: new Array(), //array where [ { 'v': val, 'l': lab } ...
                         autocomplete: true,
+                        maxselected: 0, //maximum of selected vals                        
                         minchars: 2     //at least 2 chars to show autocomplete
 		},
                 tmp_prev : '',
@@ -198,6 +199,7 @@
                 },
                 _appendItem: function(val, label, nohide){
                     
+                    var o = this.options;
                     if(val == null || label == null)
                         return;
                     
@@ -212,6 +214,7 @@
                     
                     this._refreshdrop();
                     
+                    this._checkmaxselected();
                 },  
                 _removeItem: function(val){
                     var o = this.options;
@@ -226,7 +229,26 @@
                     o.selected.splice(i, 1);
                     jQuery('li.item[val="'+val+'"]', this.element).remove();
                     
+                    this._checkmaxselected();
+                    
                 },
+                _checkmaxselected: function(){
+                     var o = this.options;
+                    
+                     if(o.maxselected  < 1){
+                         return;
+                     }
+                     
+                     if(o.selected.length >= o.maxselected){
+                        this.e_button.hide();
+                        this.e_textbox.hide();
+                        this.e_popup.hide();
+                     }
+                     else{
+                         this.e_button.show();
+                         this.e_textbox.show();
+                     }
+                },                
                 _refreshdrop:function(){   
                     var self = this;
                     jQuery('li.item', self.element).unbind('click');
@@ -306,7 +328,14 @@
                         this.init();
                     }
                     return this.options.selected;
-                },    
+                },   
+                maxselected: function(val){
+                    if(val != null){
+                        this.options.maxselected = val;
+                        this._checkmaxselected();
+                    }
+                    return this.options.maxselected;
+                },
                 destroy: function(){
                     jQuery(window).unbind("click");
                 }

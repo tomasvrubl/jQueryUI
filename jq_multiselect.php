@@ -101,7 +101,7 @@
                 <b>Properties:</b><br/>
                 <i>selected</i> - selected values []<br/>
                 <i>items</i> - list of all items<br/>       
-
+                <i>maxselected</i> - maximum of selected items, default - 0 (no limit)
             </p>
             
             <h3>Get list of selected values</h3>
@@ -118,7 +118,14 @@
                 &lt;script&gt;
             </pre>
             
-           
+           <h3>Maximum of selected values</h3>
+           <p> <b>default 0</b> - no limit
+           <pre class="prettyprint lang-html ">
+                &lt;script type="text/javascript"&gt;                
+                var list = $('#employee').wmultiselect('maxselected', 10);
+                &lt;script&gt;
+            </pre>
+           <p/>
             <h2>Screenshots</h2>
             Here is some screenshots of usage.
             <div class='screenshots'>

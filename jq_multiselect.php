@@ -31,7 +31,7 @@
         <p> 
             <span class="label">Requirements:</span> jQuery / <a href="https://jquery.com/">https://jquery.com</a><br/>
             <span class="label">License:</span>GPLv3<br/>
-            <span class="download label">Source code:</span><a href="jq_multiselect.zip"/>jq_multiselect.zip</a>
+            <span class="download label">Source code:</span><a href="https://github.com/tomasvrubl/jQueryUI"/>https://github.com/tomasvrubl/jQueryUI</a>
         </p>
         <h2>Example/demo</h2>
         <script>

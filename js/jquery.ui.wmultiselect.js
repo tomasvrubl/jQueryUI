@@ -83,15 +83,17 @@
                                     return;
                                  }
                                  if(e.which == 13) {
-                                     var it =jQuery('.focused', this.e_popup);
-                                     if(it != null && it.length > 0){
-                                         it.click();
-                                     }
-                                     else if (o.tags  && self.e_textbox.val().trim().length > 0){
+                                     if(self.e_popup.is(':visible')){
+                                        var it =jQuery('.focused', self.e_popup);
+                                        if(it != null && it.length > 0){
+                                            it.click();
+                                        }
+                                    }
+                                    else if (o.tags  && self.e_textbox.val().trim().length > 0){
                                          var v = self.e_textbox.val();
                                          self._appendItem(v,v);
                                          self.e_textbox.val('');
-                                     }
+                                    }
                                  }
                                  else if(e.which == 8 && self.e_textbox.val().length == 0){
                                      if(jQuery('.item:last', el).hasClass('drop')){

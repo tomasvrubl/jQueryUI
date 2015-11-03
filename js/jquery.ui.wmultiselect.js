@@ -67,16 +67,20 @@
                     jQuery(el).append(self.e_button);
                     jQuery(el).append(html);
                     jQuery(el).append(self.e_popup);
+                    
                     var inputText = jQuery('input[type="text"]', el);
                     inputText.off('focus');
                     inputText.on('focus', function(){    
 
-                            jQuery(window).off('keydown.wmultiselect');
-                            jQuery(window).on('keydown.wmultiselect',function(e) {
+                            jQuery(window).off('keydown.' + self._uq());
+                            jQuery(window).on('keydown.' + self._uq(),function(e) {
                                   
+                                 console.log('on ' + self._uq());
                                  if (inputText.get(0) != e.target)
                                  {
-                                    jQuery(window).off('keydown.wmultiselect');         
+                                    console.log('off ' + self._uq());
+                                    jQuery(window).off('keydown.' + self._uq());         
+                                    return;
                                  }
                                  if(e.which == 13) {
                                      jQuery('.selected', this.e_popup).click();                               
@@ -309,8 +313,26 @@
                 },
                 value: function(value){
                     if(value != null){
-                        this.options.selected = value;
-                        this.init();
+                        var o = this.options;
+                        o.selected = value;
+                       
+                        var ul =  jQuery('ul', this.element);
+                        jQuery('li.item', ul).remove();
+                        var li = '';
+                        for(var j=0; j < o.selected.length; ++j){
+                            o.selected[j] = o.selected[j] + '';
+
+                            for(var i=0; i < o.items.length; ++i){
+
+                               if(o.selected[j] == (o.items[i].v+'')){
+                                    li += '<li class="item" val="'+o.items[i].v+'">'+o.items[i].l+'</li>';
+                                    continue;
+                               }
+                            }
+                        }
+                        
+                        jQuery(li).insertBefore(jQuery('li.text', ul));
+                        
                     }
                     return this.options.selected;
                 },    

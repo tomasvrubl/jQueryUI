@@ -8,10 +8,20 @@
 		options: {
                         selected:  new Array(),  //list of keys
                         items: new Array(), //array where [ { 'v': val, 'l': lab } ...
-                        autocomplete: true,
                         maxselected: 0, //maximum of selected vals                        
                         minchars: 2     //at least 2 chars to show autocomplete
 		},
+                _uq : function()
+                {
+                    if (this.uniqId)
+                    {
+                        return this.uniqId;
+                    }
+                    
+                    $.ui.wmultiselect.uniq = ($.ui.wmultiselect.uniq || 0)+1;
+                    this.uniqId = 'wmultiselect-' + $.ui.wmultiselect.uniq;
+                    
+                },
                 tmp_prev : '',
                 e_popup: null,
                 e_button: null,
@@ -19,6 +29,7 @@
                  isinit: false,
                 _init: function() {
                         if(!this.isinit){
+                            
                             this.init();
                             this.isinit = true;
                         }                                      
@@ -27,7 +38,7 @@
                 init: function() {
                     
                     var self = this, el = self.element, o = self.options;                    
-                    jQuery(el).addClass('wmultiselect');
+                                        jQuery(el).addClass('wmultiselect');
                     
                     var li = '';
                                                 
@@ -56,117 +67,76 @@
                     jQuery(el).append(self.e_button);
                     jQuery(el).append(html);
                     jQuery(el).append(self.e_popup);
+                    var inputText = jQuery('input[type="text"]', el);
+                    inputText.off('focus');
+                    inputText.on('focus', function(){    
+
+                            jQuery(window).off('keydown.wmultiselect');
+                            jQuery(window).on('keydown.wmultiselect',function(e) {
+                                 
+                                 if(e.which == 13) {
+                                     jQuery('.selected', this.e_popup).click();                               
+                                 }
+                                 else if(e.which == 8 && self.e_textbox.val().length == 0){
+                                     if(jQuery('.item:last', el).hasClass('drop')){
+                                        self._removeItem(jQuery('.item:last', el).attr('val'));
+                                     }
+                                     else{
+                                         jQuery('.item:last',el).addClass('drop');
+                                     }
+                                     return;
+                                 }
+                                 else if(e.which == 38){
+                                     self._prevItemPopup();
+                                     return;
+                                 }
+                                 else if(e.which == 40){
+                                     self._nextItemPopup();
+                                     return;
+                                 }
+
+                                 else if(e.which = 27){                             
+                                    self._hidepopup();
+                                    return;
+                                 }
+
+                                 if(jQuery('.item:last', el).hasClass('drop')){
+                                     jQuery('.item:last', el).removeClass('drop');
+                                 }
+
+                            });
+                     })
                     
                     jQuery(el).unbind('click');
                     jQuery(el).click(function(){
                         jQuery('input[type="text"]', el).focus();
+                        
                     });
                     
-                    jQuery(window).unbind('keydown');
-                    jQuery(window).keydown(function(e) {
-                      
-                         if(e.which == 13) {
-                             jQuery('.selected', this.e_popup).click();                               
-                         }
-                         else if(e.which == 8 && self.e_textbox.val().length == 0){
-                             if(jQuery('.item:last', el).hasClass('drop')){
-                                self._removeItem(jQuery('.item:last', el).attr('val'));
-                             }
-                             else{
-                                 jQuery('.item:last',el).addClass('drop');
-                             }
-                             return;
-                         }
-                         else if(e.which == 38){
-                             self._prevItemPopup();
-                             return;
-                         }
-                         else if(e.which == 40){
-                             self._nextItemPopup();
-                             return;
-                         }
-                         
-                         else if(e.which = 27){                             
-                               self._hidepopup();
-                               return;
-                         }
-                                 
-                         if(jQuery('.item:last', el).hasClass('drop')){
-                             jQuery('.item:last', el).removeClass('drop');
-                         }
-                         
-                    });
+                    
+                   
                     
                     self.e_textbox.unbind('keyup');
-                    self.e_textbox.keyup(function(){
+                    self.e_textbox.keyup(function(ev){
                         var val = jQuery(this).val();
                         var w = (val.length * 10), mw = parseInt(jQuery(this).css('min-width'));
                         w = w < mw ? mw : w;
                         jQuery(this).attr('style' , 'width: '+w+'px !important');
-                        if(o.autocomplete && self.tmp_prev != val){   
-                            self._autocomplete(val);    
-                            self.tmp_prev = val;
+                        
+                        val = val.trim();
+                        if(self.tmp_prev != val && o.minchars < val.length){   
+                            self._showWnd(val);    
+                            
                         }
+                        self.tmp_prev = val;
                     });
-                    self.e_button.unbind('click');
                     
+                    self.e_button.unbind('click');
                     self.e_button.click(function(){
                         self._showWnd();
                     });
                     
                     this._refreshdrop();                    
-                },
-                _autocomplete: function(val){
-                    var self = this;
-                    var o = self.options;
-                    var d = self.e_popup;
-                    
-                    
-                    if(val.length < o.minchars){
-                        this._hidepopup();
-                        return;
-                    }
-                    
-                    var html = '';
-                       
-                    d.html('');
-                    for(var i=0; i < o.items.length; ++i){
-                        if(o.items[i].l.toLowerCase().indexOf(val) > -1 && 
-                                (o.selected.indexOf(o.items[i].v+'') < 0)){                               
-                            html +='<div v="'+o.items[i].v+'">'+o.items[i].l+'</div>';
-                        }
-                    }
-
-                    if(html.length == 0 )
-                        return;
-
-                    var e = this.element;
-                    var pos = jQuery(e).position();
-                    d.html(html);
-                    jQuery('div:first-child', d).addClass('selected');
-
-                     var w = jQuery(e).width() + parseInt(jQuery(e).css('padding-left')) + parseInt(jQuery(e).css('padding-right'));
-                     d.css({left: pos.left, top: pos.top + jQuery(e).height() + jQuery(e).css('margin-top') + jQuery(e).css('margin-bottom'), width: w});
-
-                     jQuery('div', d).bind('click', function(){
-                         
-                        self._appendItem(jQuery(this).attr('v'), jQuery(this).html());
-                     });
-
-                     jQuery('div', d).hover(function(){
-                         jQuery('div', d).removeClass('selected');    
-                         jQuery(this).addClass('selected');
-                     });
-
-
-                     d.show(150, function(){                                
-                         jQuery(window).click(function (){                                    
-                             if(d.is(':visible')){                                
-                               this._hidepopup();
-                             }   
-                         });
-                     });
-                
                 },
                 _prevItemPopup : function(){
                     var d = this.e_popup;
@@ -193,9 +163,9 @@
                 },                
                 _hidepopup: function(){
                     var d = this.e_popup;
-                    jQuery('div', d).unbind('click');
-                    d.hide();
-                    jQuery(window).unbind("click");
+                    jQuery(d).hide();
+                    jQuery('.opt', d).unbind('click');
+                    jQuery(window).unbind('click.' + this._uq());
                 },
                 _appendItem: function(val, label, nohide){
                     
@@ -209,11 +179,10 @@
                     jQuery('<li class="item" val="'+val+'">'+label+'</div></li>').insertBefore(jQuery('li.text', this.element));
                     
                     if(nohide == null || nohide == false){
-                     this._hidepopup();
+                      this._hidepopup();
                     }
                     
                     this._refreshdrop();
-                    
                     this._checkmaxselected();
                 },  
                 _removeItem: function(val){
@@ -279,21 +248,32 @@
                         d.css({left: pos.left, top: pos.top + jQuery(e).height() + jQuery(e).css('margin-top') + jQuery(e).css('margin-bottom'), width: w});
                       
                 },
-                _showWnd: function(){
-                    //console.log('showWnd');
+                _showWnd: function(val){
+
                     var d = this.e_popup, o = this.options, self =this;
                     var html = '';
                     d.html('');
                     
-                    for(var i=0; i < o.items.length; ++i){
-                        
-                        if(o.selected.indexOf(o.items[i].v+'') < 0){
-                            html += '<div v="'+o.items[i].v+'" class="opt"><input type="checkbox">&nbsp;'+o.items[i].l+'</div>';
+                    if(val != null && val.trim().length > 0){
+                        for(var i=0; i < o.items.length; ++i){
+                            if(o.items[i].l.toLowerCase().indexOf(val) > -1 && 
+                                (o.selected.indexOf(o.items[i].v+'') < 0)){                               
+                                html += '<div v="'+o.items[i].v+'" class="opt"><input type="checkbox">&nbsp;'+o.items[i].l+'</div>';
+                            }
+                        }
+                    }
+                    else{
+                    
+                        for(var i=0; i < o.items.length; ++i){
+
+                            if(o.selected.indexOf(o.items[i].v+'') < 0){
+                                html += '<div v="'+o.items[i].v+'" class="opt"><input type="checkbox">&nbsp;'+o.items[i].l+'</div>';
+                            }
                         }
                     }
                     
-                    this._hidepopup();
                     if(html.length < 1){
+                        this._hidepopup();
                        return;
                     }
                     
@@ -312,11 +292,12 @@
                     var w = jQuery(e).width() + parseInt(jQuery(e).css('padding-left')) + parseInt(jQuery(e).css('padding-right'));
                     d.css({left: pos.left, top: pos.top + jQuery(e).height() + jQuery(e).css('margin-top') + jQuery(e).css('margin-bottom'), width: w});
                     
-                    d.show(150, function(){                                
-                        jQuery(window).click(function (e){                                    
+                    d.show(150, function(){      
+                        jQuery(window).unbind('click.' + self._uq());
+                        jQuery(window).on('click.'+self._uq(),function(e) {                               
                            if(d.is(':visible') && 
                                    (!d.is(e.target) && d.has(e.target).length == 0)){                                
-                                 d.hide();
+                                 self._hidepopup();
                            }   
                        });
                     });
@@ -328,7 +309,7 @@
                         this.init();
                     }
                     return this.options.selected;
-                },   
+                },    
                 maxselected: function(val){
                     if(val != null){
                         this.options.maxselected = val;
@@ -337,7 +318,7 @@
                     return this.options.maxselected;
                 },
                 destroy: function(){
-                    jQuery(window).unbind("click");
+                    this._hidepopup();
                 }
 	});
 })(jQuery);

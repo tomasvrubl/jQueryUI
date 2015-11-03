@@ -73,7 +73,11 @@
 
                             jQuery(window).off('keydown.wmultiselect');
                             jQuery(window).on('keydown.wmultiselect',function(e) {
-                                 
+                                  
+                                 if (inputText.get(0) != e.target)
+                                 {
+                                    jQuery(window).off('keydown.wmultiselect');         
+                                 }
                                  if(e.which == 13) {
                                      jQuery('.selected', this.e_popup).click();                               
                                  }

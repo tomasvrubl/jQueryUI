@@ -19,3 +19,4 @@
 .wmultiselect .popup > div {padding: 4px; }
 .wmultiselect .popup input[type="checkbox"] {cursor: pointer;}
 .wmultiselect .opt {cursor: pointer;}
+.wmultiselect .popup .focused {background: #1F98D4; color: #FFF;}

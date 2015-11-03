@@ -75,15 +75,13 @@
                             jQuery(window).off('keydown.' + self._uq());
                             jQuery(window).on('keydown.' + self._uq(),function(e) {
                                   
-                                 console.log('on ' + self._uq());
                                  if (inputText.get(0) != e.target)
                                  {
-                                    console.log('off ' + self._uq());
                                     jQuery(window).off('keydown.' + self._uq());         
                                     return;
                                  }
                                  if(e.which == 13) {
-                                     jQuery('.selected', this.e_popup).click();                               
+                                     jQuery('.focused', this.e_popup).click();                               
                                  }
                                  else if(e.which == 8 && self.e_textbox.val().length == 0){
                                      if(jQuery('.item:last', el).hasClass('drop')){
@@ -94,11 +92,11 @@
                                      }
                                      return;
                                  }
-                                 else if(e.which == 38){
+                                 else if(e.which == 38){ //key up
                                      self._prevItemPopup();
                                      return;
                                  }
-                                 else if(e.which == 40){
+                                 else if(e.which == 40){ //key down
                                      self._nextItemPopup();
                                      return;
                                  }
@@ -134,42 +132,52 @@
                         val = val.trim();
                         if(self.tmp_prev != val && o.minchars < val.length){   
                             self._showWnd(val);    
+                            self._nextItemPopup();
                             
                         }
                         self.tmp_prev = val;
                     });
                     
-                    self.e_button.unbind('click');
-                    self.e_button.click(function(){
+                    this.e_button.unbind('click');
+                    this.e_button.click(function(){
                         self._showWnd();
                     });
-                    
                     this._refreshdrop();                    
                 },
                 _prevItemPopup : function(){
                     var d = this.e_popup;
                     if(d.is(':visible')){
-                        var s = jQuery('.selected', d);
+                        var s = jQuery('.focused', d);
+                        if(s != null && s.length < 1){
+                            jQuery('.opt:first-child', d).addClass('focused');
+                            return;
+                        }
                         var p = s.prev();
-                        if(p != null && p.length >0){
-                            p.addClass('selected');
-                            s.removeClass('selected');
+                        if(p != null && p.length >0){                            
+                            jQuery('.focused', d).removeClass('focused');
+                            p.addClass('focused');
                         }
                     }
                 },
                 _nextItemPopup : function(){
                     var d = this.e_popup;
                     if(d.is(':visible')){
-                        var s = jQuery('.selected', d);
-                        var n = s.next();
+                        var s = jQuery('.focused', d);
                         
+                        if(s != null && s.length < 1){
+                            jQuery('.opt:first-child', d).addClass('focused');
+                            return;
+                        }
+                        
+                        var n = s.next();
                         if(n != null && n.length > 0){
-                           n.addClass('selected');
-                           s.removeClass('selected');
+                           jQuery('.focused', d).removeClass('focused');
+                           n.addClass('focused');
                         }
                     }
                 },                
                 _hidepopup: function(){
+                    console.log('hide()');
                     var d = this.e_popup;
                     jQuery(d).hide();
                     jQuery('.opt', d).unbind('click');
@@ -219,7 +227,7 @@
                      if(o.selected.length >= o.maxselected){
                         this.e_button.hide();
                         this.e_textbox.hide();
-                        this.e_popup.hide();
+                        this._hidepopup();
                      }
                      else{
                          this.e_button.show();
@@ -271,7 +279,6 @@
                         }
                     }
                     else{
-                    
                         for(var i=0; i < o.items.length; ++i){
 
                             if(o.selected.indexOf(o.items[i].v+'') < 0){
@@ -300,7 +307,8 @@
                     var w = jQuery(e).width() + parseInt(jQuery(e).css('padding-left')) + parseInt(jQuery(e).css('padding-right'));
                     d.css({left: pos.left, top: pos.top + jQuery(e).height() + jQuery(e).css('margin-top') + jQuery(e).css('margin-bottom'), width: w});
                     
-                    d.show(150, function(){      
+                    d.show(150, function(){   
+                        console.log('show()');
                         jQuery(window).unbind('click.' + self._uq());
                         jQuery(window).on('click.'+self._uq(),function(e) {                               
                            if(d.is(':visible') && 

@@ -156,7 +156,8 @@
                 <ul class="properties">
                     <li><span>selected</span> - array of selected values</li>
                     <li><span>items</span> - array of all items</li>
-                    <li><span>maxselected</span> - maximum of selected items, default - 0 (no limit)</li>
+                    <li><span>tags</span> - allow add anything. Use for tags for example.
+                    <li><span>minchars</span> - minimum of chars to show popup</li>
                     <li><span>tags</span> - allow add anything. Use for tags for example.
                 </ul>
             </p>

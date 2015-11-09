@@ -283,7 +283,7 @@
                     
                     if(val != null && val.trim().length > 0){
                         for(var i=0; i < o.items.length; ++i){
-                            if(o.items[i].l.toLowerCase().indexOf(val) > -1 && 
+                            if(o.items[i].l.toLowerCase().indexOf(val.toLowerCase()) > -1 && 
                                 (o.selected.indexOf(o.items[i].v+'') < 0)){                               
                                 html += '<div v="'+o.items[i].v+'" class="opt"><input type="checkbox">&nbsp;'+o.items[i].l+'</div>';
                             }

@@ -154,7 +154,8 @@
                     this.e_button.click(function(){
                         self._showWnd();
                     });
-                    this._refreshdrop();                    
+                    this._refreshdrop();     
+                    this._checkmaxselected();
                 },
                 _prevItemPopup : function(){
                     var d = this.e_popup;

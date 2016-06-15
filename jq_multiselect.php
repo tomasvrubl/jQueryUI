@@ -27,14 +27,14 @@
     </style>
     </head>
     <body onload="prettyPrint();">
-        <h1>Multiselect / jQuery</h1>
+        <h1>Multiselect / jQueryUI</h1>
         <p>
             Supports multi-value select. Values can be selected by popup browser or autocomplete. For remove item use 
             <b>BACKSPACE</b> or click on item by mouse.
             <br/><br/>            
         </p>
         <p> 
-            <span class="label">Requirements:</span> jQuery / <a href="https://jquery.com/">https://jquery.com</a><br/>
+            <span class="label">Requirements:</span> jQueryUI / <a href="https://jqueryui.com/">https://jqueryui.com</a><br/>
             <span class="label">Version:</span> 0.2<br/>
             <span class="label">Last update:</span> 2015-11-03<br/>
             <span class="label">License:</span>GPLv3<br/>
